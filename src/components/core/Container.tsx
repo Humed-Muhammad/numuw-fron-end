@@ -1,8 +1,9 @@
-import { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 
 interface Props {
   children: ReactNode;
   className?: string;
+  ref?: RefObject<HTMLDivElement>;
 }
 export const Container = ({ children, className }: Props) => {
   return (
