@@ -1,5 +1,5 @@
 import { Container } from "@/components/core/Container";
-import { useGetUsersQuery } from "./service";
+import { useGetUsersQuery, useListenToMessagesQuery } from "./service";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { IconFileImport, IconMessage, IconSend } from "@tabler/icons-react";
@@ -12,7 +12,7 @@ import { Chat } from "../types";
 
 export const Home = () => {
   const { toast } = useToast();
-  const { data, isError, error } = useGetUsersQuery("parent", { skip: false });
+  const { data, isError, error } = useGetUsersQuery("parent", { skip: true });
 
   useEffect(() => {
     if (isError) {
@@ -24,6 +24,9 @@ export const Home = () => {
       });
     }
   }, [isError]);
+
+  const res = useListenToMessagesQuery(undefined);
+  console.log(res);
 
   return (
     <Container className="h-screen">
