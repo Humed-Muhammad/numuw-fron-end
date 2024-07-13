@@ -1,5 +1,11 @@
+import type { ChatState } from "./Home/slice/type";
+
+export type RootState = {
+  chat: ChatState;
+};
+
 export type LoginPayload = { email: string; password: string };
-export type LoginResponse = { token: string };
+export type LoginResponse = { token: string; userId: string };
 
 export type User = {
   childrenCount: number;
@@ -22,4 +28,23 @@ export type Chat = {
   recipientId: string;
   createdAt: string | Date;
   readAt: string | Date;
+};
+
+export type Message = {
+  to: string;
+  payload: MessagePayload;
+};
+
+export type MessagePayload = {
+  value: string;
+  type: "text" | "image" | "video";
+  senderId: string;
+};
+
+export type ChatMessage = {
+  senderId: string;
+  recipientId: string;
+  content: Omit<MessagePayload, "senderId">;
+  messageId: string;
+  createdAt: string;
 };

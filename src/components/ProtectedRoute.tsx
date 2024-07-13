@@ -1,4 +1,5 @@
-import React from "react";
+import type { LoginResponse } from "@/page/types";
+import { getLocalData } from "@/utils";
 import { Navigate, useLocation } from "react-router-dom";
 
 interface ProtectedRouteProps {
@@ -6,10 +7,10 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const token = localStorage.getItem("token");
+  const user = getLocalData<LoginResponse>("user");
   const location = useLocation();
 
-  if (!token) {
+  if (!user?.token) {
     // Redirect to login if there's no token
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

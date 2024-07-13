@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { Container } from "@/components/core/Container";
-
 import { AlertMessage } from "@/components/core/AlertMessage";
 import { Formik } from "formik";
 import { LoadingDots } from "@/components/shared/icons";
@@ -19,22 +18,21 @@ import { loginValidation } from "./validation";
 import { FormikError } from "@/components/core/FormikError";
 import { IconX } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "./service";
+import { useSnapMutation } from "snap-fetch";
+import type { LoginResponse } from "../types";
 
 export default function Login() {
   const push = useNavigate();
-  const [mutate, { isLoading, error, isError }] = useLoginMutation();
-  // console.log({ isError });
+  const { mutate, isLoading, error, isError } =
+    useSnapMutation<LoginResponse>("login/");
   return (
     <Container className="bg-gray-50 h-screen">
       <Formik
         initialValues={{ email: "", password: "" }}
         onSubmit={async (values) => {
           mutate(values).then((res) => {
-            if (res.data?.token) {
-              localStorage.setItem("token", res.data.token);
-              push("/");
-            }
+            localStorage.setItem("user", JSON.stringify(res));
+            push("/");
           });
         }}
         validationSchema={loginValidation}
@@ -48,7 +46,7 @@ export default function Login() {
                   Icon={<IconX className="h-4 w-4" />}
                   title="Error"
                   message={
-                    error.data.error ??
+                    error?.message ??
                     "Something went wrong, please try again later."
                   }
                 />

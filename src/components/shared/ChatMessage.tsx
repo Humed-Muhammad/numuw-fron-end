@@ -2,11 +2,15 @@ import { useMemo } from "react";
 import { LeftTail, RightTail } from "@/assets";
 import { format, toDate } from "date-fns";
 import { IconCheck, IconChecks, IconTimeDuration0 } from "@tabler/icons-react";
-import type { Chat } from "@/page/types";
+import type {
+  ChatMessage as ChatMessageType,
+  LoginResponse,
+} from "@/page/types";
 import { Label } from "@radix-ui/react-label";
+import { getLocalData } from "@/utils";
 
 interface Props {
-  chat: Chat;
+  chat: ChatMessageType;
 }
 
 const LoadingState = {
@@ -16,9 +20,9 @@ const LoadingState = {
 };
 
 export const ChatMessage = ({ chat }: Props) => {
-  const userId = localStorage.getItem("token");
+  const userId = getLocalData<LoginResponse>("user");
   const isSender = useMemo(
-    () => userId === chat.senderId,
+    () => userId.userId === chat.senderId,
     [chat?.senderId, userId]
   );
 
@@ -47,12 +51,7 @@ export const ChatMessage = ({ chat }: Props) => {
           {message}
         </Label>
         <div className="absolute right-2 bottom-2">
-          {isSender && (
-            <>
-              {chat.readAt && LoadingState.seen}
-              {!chat.readAt && LoadingState.unread}
-            </>
-          )}
+          {isSender && <>{LoadingState.unread}</>}
         </div>
         {isSender ? (
           <div className="bottom-0 -right-2 absolute">
