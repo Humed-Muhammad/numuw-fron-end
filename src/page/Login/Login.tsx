@@ -95,7 +95,7 @@ export default function Login() {
       </Formik>
       <Card className="absolute right-10 top-2 flex-col flex p-10 space-y-2">
         <Label className="text-xl">Example Parent</Label>
-        <Label>Email: alice@gmail.com</Label>
+        <Label>Email: fatima@gmail.com</Label>
         <Label>Password: 1234567</Label>
         <Label className="text-xl mt-4">Example Therapist</Label>
         <Label>Email: bob@gmail.com</Label>

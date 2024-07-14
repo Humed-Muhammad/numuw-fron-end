@@ -5,7 +5,11 @@ export type RootState = {
 };
 
 export type LoginPayload = { email: string; password: string };
-export type LoginResponse = { token: string; userId: string };
+export type LoginResponse = {
+  token: string;
+  userId: string;
+  userType: "parent" | "therapist";
+};
 
 export type User = {
   childrenCount: number;
@@ -35,9 +39,11 @@ export type Message = {
   payload: MessagePayload;
 };
 
+export type ContentType = "text" | "image" | "video";
+
 export type MessagePayload = {
   value: string;
-  type: "text" | "image" | "video";
+  type: ContentType;
   senderId: string;
 };
 
@@ -46,5 +52,5 @@ export type ChatMessage = {
   recipientId: string;
   content: Omit<MessagePayload, "senderId">;
   messageId: string;
-  createdAt: string;
+  createdAt: Date;
 };

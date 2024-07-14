@@ -43,7 +43,7 @@ export const ChatMessage = ({ chat }: Props) => {
       <div
         className={`relative rounded-tr-md rounded-tl-md p-3 h-auto flex items-center ${
           isSender
-            ? "pr-4 ml-2 bg-slate-800 self-end"
+            ? "pr-8 ml-2 bg-slate-800 self-end"
             : "pr-2 mr-2  bg-[#D9D9D9] self-start"
         } max-w-[582px] min-w-[200px] mb-12`}
       >
