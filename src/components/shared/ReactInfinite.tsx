@@ -101,7 +101,7 @@ export const ReactInfinite = <T,>({
 
   return (
     <Container
-      className="flex-col px-7 py-5 pb-20 overflow-y-auto w-full flex-grow items-end "
+      className="flex-col px-7 py-5 pb-20 overflow-y-auto w-full flex-grow items-end justify-end"
       ref={messageContainerRef}
     >
       {loading && <Label className="opacity-50 absolute">Loading...</Label>}

@@ -1,13 +1,14 @@
 import { useToast } from "@/components/ui/use-toast";
 import { establishWebsocket, getLocalData } from "..";
-import { useSnapQuery } from "snap-fetch";
-import { useCallback, useEffect, useMemo } from "react";
+import { useGenHashKey, useSnapQuery } from "snap-fetch";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMessages } from "@/page/Home/slice/selector";
 import type { ChatMessage, LoginResponse, User } from "@/page/types";
-import { addMessage } from "@/page/Home/slice";
+import { chatAction } from "@/page/Home/slice";
 
 export const useChat = () => {
+  const [recipientId, setRecipientId] = useState("");
   /**@Selectors */
   const messages = useSelector(selectMessages);
 
@@ -16,7 +17,7 @@ export const useChat = () => {
 
   /**@Handlers */
   const addNewMessage = useCallback((message: ChatMessage) => {
-    dispatch(addMessage(message));
+    dispatch(chatAction.addMessage(message));
   }, []);
 
   const { toast } = useToast();
@@ -25,6 +26,32 @@ export const useChat = () => {
   const { data, isError, error } = useSnapQuery<{ data: User[] }>(`users`, {
     filter: { user_type: user.userType === "parent" ? "therapist" : "parent" },
   });
+
+  const messageIdHashValue = useMemo(() => {
+    if (user && recipientId) {
+      if (user.userType === "parent") {
+        return recipientId + user.userId;
+      } else {
+        return user.userId + recipientId;
+      }
+    }
+  }, [recipientId, user.userId, user.userType]);
+  console.log({ messageIdHashValue });
+
+  const { hashKey } = useGenHashKey(messageIdHashValue ?? "");
+
+  const chatData = useSnapQuery<{ data: Array<ChatMessage> }>("chats", {
+    filter: {
+      messageId: hashKey,
+    },
+    skip: !recipientId && !messageIdHashValue,
+  });
+
+  useEffect(() => {
+    if (chatData.data?.data) {
+      dispatch(chatAction.setAllMessages(chatData.data?.data));
+    }
+  }, [chatData.data?.data]);
 
   useEffect(() => {
     if (isError) {
@@ -76,6 +103,8 @@ export const useChat = () => {
     otherUsers: data,
     sendMessage,
     addNewMessage,
-    senderId: user.userId,
+    senderId: user?.userId,
+    userType: user?.userType,
+    setRecipientId,
   };
 };
