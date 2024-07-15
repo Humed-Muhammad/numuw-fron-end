@@ -15,3 +15,14 @@ export const establishWebsocket = (userId: string | undefined) => {
   }
   return null;
 };
+
+export const getFileType = (file: File | undefined): "video" | "image" => {
+  if (file?.type.startsWith("video/")) {
+    return "video";
+  } else if (file?.type.startsWith("image/")) {
+    return "image";
+  } else {
+    // Default to "image" if the type is not recognized
+    return "image";
+  }
+};

@@ -4,7 +4,13 @@ import { useGenHashKey, useSnapQuery } from "snap-fetch";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMessages } from "@/page/Home/slice/selector";
-import type { ChatMessage, LoginResponse, User } from "@/page/types";
+import type {
+  ChatMessage,
+  ContentType,
+  LoginResponse,
+  MessagePayload,
+  User,
+} from "@/page/types";
 import { chatAction } from "@/page/Home/slice";
 
 export const useChat = () => {
@@ -36,7 +42,6 @@ export const useChat = () => {
       }
     }
   }, [recipientId, user.userId, user.userType]);
-  console.log({ messageIdHashValue });
 
   const { hashKey } = useGenHashKey(messageIdHashValue ?? "");
 
@@ -98,6 +103,31 @@ export const useChat = () => {
     websocketConnection?.send(message);
   };
 
+  const handleFinalSubmit = useCallback(
+    (payload: MessagePayload) => {
+      const newMessage = {
+        payload,
+        to: payload.to,
+        userType: user?.userType,
+      };
+      // For optimistic update
+      addNewMessage({
+        content: {
+          contentType: newMessage.payload.contentType as ContentType,
+          value: newMessage.payload.value,
+        },
+        senderId: newMessage.payload.senderId,
+        createdAt: new Date(),
+        messageId:
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15),
+        recipientId: newMessage.to as string,
+      });
+      sendMessage(JSON.stringify(newMessage));
+    },
+    [user?.userType]
+  );
+
   return {
     messages,
     otherUsers: data,
@@ -106,5 +136,7 @@ export const useChat = () => {
     senderId: user?.userId,
     userType: user?.userType,
     setRecipientId,
+    toast,
+    handleFinalSubmit,
   };
 };

@@ -43,8 +43,12 @@ export type ContentType = "text" | "image" | "video";
 
 export type MessagePayload = {
   value: string;
-  type: ContentType;
+  contentType?: string;
+  type?: ContentType;
   senderId: string;
+  to?: string;
+  file?: File | null;
+  fileName?: string;
 };
 
 export type ChatMessage = {

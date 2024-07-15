@@ -27,6 +27,10 @@ export const ChatMessage = ({ chat }: Props) => {
   );
 
   const message = useMemo(() => chat?.content.value, [chat.content.value]);
+  const type = useMemo(
+    () => chat?.content.contentType,
+    [chat.content.contentType]
+  );
 
   const time = useMemo(() => {
     try {
@@ -39,17 +43,21 @@ export const ChatMessage = ({ chat }: Props) => {
     }
   }, [chat?.createdAt]);
   return (
-    <>
+    <div
+      className={`w-full flex ${isSender ? "justify-end" : "justify-start"}`}
+    >
       <div
         className={`relative rounded-tr-md rounded-tl-md p-3 h-auto flex items-center ${
-          isSender
-            ? "pr-8 ml-2 bg-slate-800 self-end"
-            : "pr-2 mr-2  bg-[#D9D9D9] self-start"
-        } max-w-[582px] min-w-[200px] mb-12`}
+          isSender ? "pr-8 ml-2 bg-slate-800 " : "pr-2 mr-2  bg-[#D9D9D9]"
+        } max-w-[400px] min-w-[200px] mb-12`}
       >
-        <Label className={`${isSender ? "text-white" : "text-gray-900"}`}>
-          {message}
-        </Label>
+        {type === "text" && (
+          <Label className={`${isSender ? "text-white" : "text-gray-900"}`}>
+            {message}
+          </Label>
+        )}
+        {type === "image" && <img className="min-h-56" src={message} />}
+        {type === "video" && <video controls className="h-56" src={message} />}
         <div className="absolute right-2 bottom-2">
           {isSender && <>{LoadingState.unread}</>}
         </div>
@@ -70,6 +78,6 @@ export const ChatMessage = ({ chat }: Props) => {
           {time}
         </Label>
       </div>
-    </>
+    </div>
   );
 };

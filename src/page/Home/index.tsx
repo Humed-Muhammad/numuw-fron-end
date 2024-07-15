@@ -1,55 +1,59 @@
 import { Container } from "@/components/core/Container";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { IconFileImport, IconMessage, IconSend } from "@tabler/icons-react";
+import {
+  IconFile,
+  IconFileImport,
+  IconMessage,
+  IconSend,
+} from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { ReactInfinite } from "@/components/shared/ReactInfinite";
 import { ChatMessage } from "@/components/shared/ChatMessage";
-import type { ChatMessage as ChatMessageType, ContentType } from "../types";
+import type { ChatMessage as ChatMessageType } from "../types";
 import { Formik } from "formik";
 
 import { useChat } from "@/utils/hooks/useChat";
 import { UserTypeMapper } from "@/utils/constants";
+import { Badge } from "@/components/ui/badge";
+import { useSnapMutation } from "snap-fetch";
+import { useRef } from "react";
+import { getFileType } from "@/utils";
+import { LoadingCircle } from "@/components/shared/icons";
 
 export const Home = () => {
   const {
     messages,
     otherUsers,
-    sendMessage,
-    addNewMessage,
-    userType,
     senderId,
     setRecipientId,
+    toast,
+    handleFinalSubmit,
+    userType,
   } = useChat();
+
+  const { mutate, isLoading } = useSnapMutation<{ uploadedFile: string }>(
+    "upload",
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <Formik
       initialValues={{
         value: "",
-        type: "text",
+        contentType: "text",
         senderId,
         to: "",
+        file: null,
+        fileName: "",
       }}
       onSubmit={(payload, { setFieldValue }) => {
-        const newMessage = {
-          payload,
-          to: payload.to,
-          userType,
-        };
-        // For optimistic update
-        addNewMessage({
-          content: {
-            type: newMessage.payload.type as ContentType,
-            value: newMessage.payload.value,
-          },
-          senderId: newMessage.payload.senderId,
-          createdAt: new Date(),
-          messageId:
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15),
-          recipientId: newMessage.to,
-        });
-        sendMessage(JSON.stringify(newMessage));
+        handleFinalSubmit(payload);
         setFieldValue("value", "");
       }}
     >
@@ -84,14 +88,14 @@ export const Home = () => {
                   </div>
                   <div className="relative space-y-3 flex flex-col">
                     <IconMessage />
-                    {/* {messages.length ? (
+                    {messages.length && !values.to ? (
                       <Badge
                         className="absolute -top-7 -right-3 px-2 rounded-full flex items-center justify-center"
                         variant="destructive"
                       >
                         {messages.length}
                       </Badge>
-                    ) : null} */}
+                    ) : null}
                   </div>
                 </Card>
               ))
@@ -102,39 +106,75 @@ export const Home = () => {
             )}
           </div>
           {values.to ? (
-            <div className="w-9/12 flex flex-col justify-between items-center h-full">
-              <div className="w-full flex-grow">
-                <ReactInfinite<ChatMessageType>
-                  useScrollToBottom
-                  loading={false}
-                  dataLength={10}
-                  data={messages ?? []}
-                  render={(chat) => <ChatMessage chat={chat} />}
-                  loadMore={() => console.log("first")}
-                />
-              </div>
+            <div className="relative w-9/12 flex flex-col justify-between items-center h-screen overflow-hidden">
+              <ReactInfinite<ChatMessageType>
+                useScrollToBottom
+                loading={false}
+                dataLength={10}
+                data={messages ?? []}
+                render={(chat) => <ChatMessage chat={chat} />}
+                loadMore={() => console.log("first")}
+              />
 
-              <div className="relative w-full">
-                <textarea
-                  className="outline-none p-5 h-20 w-full border-2 border-gray-100 "
-                  placeholder="Message..."
-                  name="value"
-                  onChange={handleChange}
-                  value={values.value}
-                />
-                <div className="absolute flex justify-center top-1/2 -translate-y-1/2 right-4 space-x-4">
-                  <Button
-                    type="submit"
-                    onClick={() => handleSubmit()}
-                    variant="outline"
-                    size="icon"
-                  >
-                    <IconSend />
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <IconFileImport />
-                  </Button>
-                </div>
+              <div className="w-full h-20">
+                {values.fileName ? (
+                  <div className="flex w-full justify-center mb-2 items-center">
+                    <Card className="p-2 w-1/2 flex justify-between items-center">
+                      <Label>File: {values.fileName}</Label>
+                      <IconFile />
+                    </Card>
+                    <Button
+                      className="ml-3"
+                      type="submit"
+                      onClick={async () => {
+                        const res = await mutate(values.file);
+
+                        setFieldValue("file", null);
+                        setFieldValue("fileName", null);
+                        handleFinalSubmit({
+                          ...values,
+                          value: res?.uploadedFile as string,
+                        });
+                        toast({
+                          title: "success",
+                          description: "File sent successfully",
+                          duration: 2000,
+                        });
+                      }}
+                      variant="outline"
+                      size="icon"
+                    >
+                      {isLoading ? <LoadingCircle /> : <IconSend />}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="relative w-full">
+                    <textarea
+                      className="outline-none p-5 w-full border-2 border-gray-100 "
+                      placeholder="Message..."
+                      name="value"
+                      onChange={handleChange}
+                      value={values.value}
+                    />
+                    <div className="absolute flex justify-center top-1/2 -translate-y-1/2 right-4 space-x-4">
+                      <Button
+                        type="submit"
+                        onClick={() => handleSubmit()}
+                        variant="outline"
+                        size="icon"
+                      >
+                        <IconSend />
+                      </Button>
+                      <Button
+                        onClick={() => inputRef.current?.click()}
+                        variant="outline"
+                        size="icon"
+                      >
+                        <IconFileImport />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -144,6 +184,22 @@ export const Home = () => {
               </Label>
             </div>
           )}
+          <input
+            ref={inputRef}
+            className="hidden"
+            name="file"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              const formData = new FormData();
+              if (file) {
+                formData.append("files", file!);
+              }
+              setFieldValue("contentType", getFileType(file));
+              setFieldValue("fileName", file?.name);
+              setFieldValue("file", formData);
+            }}
+            type="file"
+          />
         </Container>
       )}
     </Formik>

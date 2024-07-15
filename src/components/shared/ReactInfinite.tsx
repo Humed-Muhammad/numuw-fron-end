@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-// import { Button, Flex, Typography } from 'app/components/Core';
-// import { BoxProps } from 'app/components/Core/types';
-// import { AngleDown } from 'styled-icons/fa-solid';
-// import { theme } from 'utils/theme/theme';
+
 import { debounce } from "lodash";
-import { Container } from "../core/Container";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { IconArrowDown } from "@tabler/icons-react";
@@ -59,10 +55,13 @@ export const ReactInfinite = <T,>({
         behavior: "instant",
         block: "center",
       });
+    } else {
+      scrollToBottom();
     }
   }, [
     messageContainerRef.current?.lastElementChild?.textContent,
     disableMountScrollToBottom,
+    scrollToBottom,
   ]);
 
   const handleLoadMore = useCallback(() => {
@@ -78,10 +77,10 @@ export const ReactInfinite = <T,>({
         data?.length < dataLength
       ) {
         handleLoadMore();
-        messageContainerRef.current?.scrollTo({
-          behavior: "smooth",
-          top: 300,
-        });
+        // messageContainerRef.current?.scrollTo({
+        //   behavior: "smooth",
+        //   top: 300,
+        // });
       }
 
       const scrollHeight = messageContainerRef.current?.scrollHeight || 0;
@@ -100,21 +99,22 @@ export const ReactInfinite = <T,>({
   }, [loading, dataLength, JSON.stringify(loadMore)]);
 
   return (
-    <Container
-      className="flex-col px-7 py-5 pb-20 overflow-y-auto w-full flex-grow items-end justify-end"
+    <div
+      className="flex-grow overflow-y-auto px-4 py-6 w-full h-[calc(100vh-200px)]"
       ref={messageContainerRef}
     >
       {loading && <Label className="opacity-50 absolute">Loading...</Label>}
       {showScrollToBottom && useScrollToBottom && (
         <Button
-          className="absolute border border-green-400 right-3 bottom-52 rounded-full h-8 w-8 z-10"
+          className="absolute border border-green-400 right-5 bottom-52 rounded-full h-9 w-9 z-10"
           variant="outline"
+          size="icon"
           onClick={() => scrollToBottom()}
         >
-          <IconArrowDown className="text-gray-800" size={20} />
+          <IconArrowDown className="text-gray-800" />
         </Button>
       )}
       {data.map((item, index) => render(item, index))}
-    </Container>
+    </div>
   );
 };
