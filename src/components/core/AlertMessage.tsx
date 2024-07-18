@@ -1,4 +1,4 @@
-import React, { ComponentProps, ReactNode } from "react";
+import { ComponentProps, ReactNode } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 interface Props extends ComponentProps<typeof Alert> {

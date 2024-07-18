@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 interface Props {
   setFieldValue?: (
@@ -19,7 +19,7 @@ export const ChipsInput = ({
   const [chips, setChips] = useState<Array<string | undefined>>(value ?? []);
   const [inputValue, setInputValue] = useState<string>("");
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
