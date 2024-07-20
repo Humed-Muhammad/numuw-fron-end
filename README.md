@@ -10,6 +10,7 @@ This is the frontend for ChatApp, a real-time messaging application designed for
 - React Router for navigation
 - SnapFetch (Include Redux + Redux saga + Caching and Invalidation... )
 - Tailwind
+- Vercel to host the front-end with github ci/cd integration
 
 ## Why SnapFetch?
 
