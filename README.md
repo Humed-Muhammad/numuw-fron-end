@@ -15,7 +15,7 @@ This is the frontend for ChatApp, a real-time messaging application designed for
 
 Snap-Fetch is a lightweight data fetching tool for React applications. It's designed to efficiently fetch data from APIs, cache it, and store it in Redux using Redux Toolkit and Redux Saga. Snap-Fetch provides intuitive hooks for performing queries and mutations, as well as configuring global API options.
 
-**"By the way I built Snap-Fetch to address common challenges in modern web applications when dealing with API requests. Here's why I created it:**
+**"By the way I built Snap-Fetch to address common challenges in modern web applications that ue redux when dealing with API requests. Here's why I created it:**
 
 1. **Efficiency**: Snap-Fetch reduces unnecessary network requests by intelligently caching data and avoiding duplicate fetches for the same information.
 2. **Simplicity**: It provides easy-to-use hooks for queries and mutations, simplifying the process of fetching and updating data.
