@@ -154,7 +154,7 @@ export const Home = () => {
                   ) : (
                     <div className="relative w-full">
                       <textarea
-                        className="outline-none p-5 w-full border-2 border-gray-100 "
+                        className="outline-none p-5 w-full border-2 border-gray-100 pr-32"
                         placeholder="Message..."
                         name="value"
                         onChange={handleChange}
