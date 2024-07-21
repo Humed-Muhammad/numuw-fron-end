@@ -60,8 +60,8 @@ export const Home = () => {
         }}
       >
         {({ handleChange, handleSubmit, setFieldValue, values }) => (
-          <Container className="h-screen">
-            <div className="bg-gray-50 w-1/3 p-3 h-full flex  flex-col">
+          <Container className="h-screen flex-col w-full md:flex-row">
+            <div className="bg-gray-50 w-full md:w-1/3 p-3 h-52 md:h-full flex flex-col">
               <Label className="my-3 text-lg">
                 List of {UserTypeMapper[userType]}
               </Label>
@@ -110,7 +110,7 @@ export const Home = () => {
               )}
             </div>
             {values.to ? (
-              <div className="relative w-9/12 flex flex-col justify-between items-center h-screen overflow-hidden">
+              <div className="relative w-full md:w-9/12 flex flex-col justify-between items-center h-screen overflow-hidden">
                 <ReactInfinite<ChatMessageType>
                   useScrollToBottom
                   loading={false}
