@@ -52,9 +52,14 @@ export type MessagePayload = {
 };
 
 export type ChatMessage = {
+  id?: string;
   senderId: string;
   recipientId: string;
   content: Omit<MessagePayload, "senderId">;
   messageId: string;
   createdAt: Date;
+  readAt?: Date;
+  seen?: boolean;
 };
+
+export type UpdatedChats = { data: Array<string> };

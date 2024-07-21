@@ -59,7 +59,13 @@ export const ChatMessage = ({ chat }: Props) => {
         {type === "image" && <img className="min-h-56" src={message} />}
         {type === "video" && <video controls className="h-56" src={message} />}
         <div className="absolute right-2 bottom-2">
-          {isSender && <>{LoadingState.unread}</>}
+          {isSender && (
+            <>
+              {chat?.readAt || chat?.seen
+                ? LoadingState.seen
+                : LoadingState.unread}
+            </>
+          )}
         </div>
         {isSender ? (
           <div className="bottom-0 -right-2 absolute">

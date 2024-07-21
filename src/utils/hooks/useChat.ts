@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
 import { establishWebsocket, getLocalData } from "..";
-import { useGenHashKey, useSnapQuery } from "snap-fetch";
+import { useGenHashKey, useSnapMutation, useSnapQuery } from "snap-fetch";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMessages } from "@/page/Home/slice/selector";
@@ -9,9 +9,11 @@ import type {
   ContentType,
   LoginResponse,
   MessagePayload,
+  UpdatedChats,
   User,
 } from "@/page/types";
 import { chatAction } from "@/page/Home/slice";
+import { apiEndpoint } from "@/api.routes";
 
 export const useChat = () => {
   const [recipientId, setRecipientId] = useState("");
@@ -127,6 +129,26 @@ export const useChat = () => {
     },
     [user?.userType]
   );
+
+  //Read Chats
+  const unReadChats = useMemo(
+    () =>
+      messages.filter((message) => !message.readAt).map((unread) => unread.id),
+    [messages]
+  );
+  const updateChats = useSnapMutation<UpdatedChats>(apiEndpoint.readChats, {
+    body: {
+      ids: unReadChats,
+    },
+  });
+
+  useEffect(() => {
+    if (unReadChats?.length) {
+      updateChats.mutate();
+    }
+  }, [updateChats.mutate, unReadChats]);
+
+  //End
 
   return {
     messages,
